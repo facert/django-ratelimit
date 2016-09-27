@@ -9,16 +9,16 @@ from django.conf import settings
 from django.core import mail
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sebug.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proj.settings')
 django.setup()
 
-app = Celery('sync', backend=settings.CELERY_RESULT_BACKEND, broker=settings.REDIS_BROKER)
+app = Celery('block_spider', backend=settings.CELERY_RESULT_BACKEND, broker=settings.REDIS_BROKER)
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 
 @app.task()
 def send_mail(usage):
-    emails = ['seebug block spider', json.dumps(usage), settings.EMAIL_HOST_USER, settings.EMAIL_RECEIVER]
+    emails = ['block spider', json.dumps(usage), settings.EMAIL_HOST_USER, settings.EMAIL_RECEIVER]
     if usage['count'] in settings.RATELIMIT_COUNT_TO_SEND_EMAIL:
         mail.send_mail(*emails)
 
