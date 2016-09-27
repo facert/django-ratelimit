@@ -94,7 +94,7 @@ def _make_cache_key(group, rate, value, methods):
             methods = ''.join(sorted([m.upper() for m in methods]))
         parts.append(methods)
     prefix = getattr(settings, 'RATELIMIT_CACHE_PREFIX', 'rl:')
-    return prefix + hashlib.md5(u''.join(parts).encode('utf-8')).hexdigest()
+    return prefix + hashlib.md5(u''.join(parts).encode('utf-8')).hexdigest(), u'~'.join(parts).encode('utf-8')
 
 
 def is_ratelimited(request, group=None, fn=None, key=None, rate=None,
@@ -126,7 +126,7 @@ def is_ratelimited(request, group=None, fn=None, key=None, rate=None,
     limited = usage.get('count') > usage.get('limit')
     if increment:
         request.limited = old_limited or limited
-    return limited
+    return limited, usage
 
 
 def get_usage_count(request, group=None, fn=None, key=None, rate=None,
@@ -154,7 +154,7 @@ def get_usage_count(request, group=None, fn=None, key=None, rate=None,
         raise ImproperlyConfigured(
             'Could not understand ratelimit key: %s' % key)
 
-    cache_key = _make_cache_key(group, rate, value, method)
+    cache_key, raw_key = _make_cache_key(group, rate, value, method)
     time_left = _get_window(value, period) - int(time.time())
     initial_value = 1 if increment else 0
     added = cache.add(cache_key, initial_value)
@@ -168,7 +168,7 @@ def get_usage_count(request, group=None, fn=None, key=None, rate=None,
                 count = initial_value
         else:
             count = cache.get(cache_key, initial_value)
-    return {'count': count, 'limit': limit, 'time_left': time_left}
+    return {'count': count, 'limit': limit, 'time_left': time_left, 'raw_key': raw_key}
 
 is_ratelimited.ALL = ALL
 is_ratelimited.UNSAFE = UNSAFE

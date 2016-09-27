@@ -24,5 +24,16 @@ DATABASES = {
     },
 }
 
+RATELIMIT_VIEW = 'ratelimit.exception.CustomRatelimited'
+
+
+EMAIL_BACKEND = 'ratelimit.celery_email.backends.CeleryEmailBackend'
+
+
+CELERY_EMAIL_TASK_CONFIG = {
+    'queue': 'email',
+    'rate_limit': '50/m',  # * CELERY_EMAIL_CHUNK_SIZE (default: 10)
+}
+
 # silence system check about unset `MIDDLEWARE_CLASSES`
 SILENCED_SYSTEM_CHECKS = ['1_7.W001']

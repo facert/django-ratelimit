@@ -22,11 +22,11 @@ def ratelimit(group=None, key=None, rate=None, method=ALL, block=False):
             else:
                 request = args[1]
             request.limited = getattr(request, 'limited', False)
-            ratelimited = is_ratelimited(request=request, group=group, fn=fn,
+            ratelimited, usage = is_ratelimited(request=request, group=group, fn=fn,
                                          key=key, rate=rate, method=method,
                                          increment=True)
             if ratelimited and block:
-                raise Ratelimited()
+                raise Ratelimited(usage)
             return fn(*args, **kw)
         return _wrapped
     return decorator

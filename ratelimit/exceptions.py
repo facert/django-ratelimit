@@ -2,4 +2,7 @@ from django.core.exceptions import PermissionDenied
 
 
 class Ratelimited(PermissionDenied):
-    pass
+
+    def __init__(self, usage):
+        self.usage = usage
+        super(Ratelimited, self).__init__()
