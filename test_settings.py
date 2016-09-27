@@ -4,7 +4,24 @@ INSTALLED_APPS = (
     'ratelimit',
 )
 
+
+MIDDLEWARE_CLASSES = (
+    'ratelimit.middleware.RatelimitMiddleware',
+)
+
+# email settings
+EMAIL_HOST = '***'
+EMAIL_PORT = '***'
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = '***'
+EMAIL_HOST_PASSWORD = '***'
+DEFAULT_FROM_EMAIL = '***'
+
+EMAIL_RECEIVER = ['**', '**']
+
 RATELIMIT_USE_CACHE = 'default'
+
+RATELIMIT_COUNT_TO_SEND_EMAIL = [2, 50, 100]
 
 CACHES = {
     'default': {
@@ -24,16 +41,17 @@ DATABASES = {
     },
 }
 
-RATELIMIT_VIEW = 'ratelimit.exception.CustomRatelimited'
+
+REDIS_HOST = '127.0.0.1'
+REDIS_PORT = 6379
 
 
-EMAIL_BACKEND = 'ratelimit.celery_email.backends.CeleryEmailBackend'
+RATELIMIT_VIEW = 'ratelimit.views.ratelimited'
+RATELIMIT_TASK = 'ratelimit.task.send_mail'
+RATELIMIT_COUNT_TO_SEND_EMAIL = [2, 50, 100]
+CELERY_RESULT_BACKEND = "redis://%s:%d/2" % (REDIS_HOST, REDIS_PORT)
+REDIS_BROKER = "redis://%s:%d/3" % (REDIS_HOST, REDIS_PORT)
 
-
-CELERY_EMAIL_TASK_CONFIG = {
-    'queue': 'email',
-    'rate_limit': '50/m',  # * CELERY_EMAIL_CHUNK_SIZE (default: 10)
-}
 
 # silence system check about unset `MIDDLEWARE_CLASSES`
 SILENCED_SYSTEM_CHECKS = ['1_7.W001']
