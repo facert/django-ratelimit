@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
-from ratelimit import ALL, UNSAFE
-from ratelimit.decorators import ratelimit
+from . import ALL, UNSAFE
+from .decorators import ratelimit
 
 
 __all__ = ['RatelimitMixin']

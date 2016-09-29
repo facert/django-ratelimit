@@ -4,10 +4,10 @@ from django.test import RequestFactory, TestCase
 from django.test.utils import override_settings
 from django.views.generic import View
 
-from ratelimit.decorators import ratelimit
-from ratelimit.exceptions import Ratelimited
-from ratelimit.mixins import RatelimitMixin
-from ratelimit.utils import is_ratelimited, _split_rate
+from .decorators import ratelimit
+from .exceptions import Ratelimited
+from .mixins import RatelimitMixin
+from .utils import is_ratelimited, _split_rate
 
 
 rf = RequestFactory()

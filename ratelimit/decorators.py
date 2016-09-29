@@ -4,9 +4,9 @@ from functools import wraps
 
 from django.http import HttpRequest
 
-from ratelimit import ALL, UNSAFE
-from ratelimit.exceptions import Ratelimited
-from ratelimit.utils import is_ratelimited
+from . import ALL, UNSAFE
+from .exceptions import Ratelimited
+from .utils import is_ratelimited
 
 
 __all__ = ['ratelimit']

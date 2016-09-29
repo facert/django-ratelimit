@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.cache import caches
 from django.core.exceptions import ImproperlyConfigured
 
-from ratelimit import ALL, UNSAFE
+from . import ALL, UNSAFE
 
 
 __all__ = ['is_ratelimited']
@@ -27,8 +27,23 @@ def user_or_ip(request):
     return request.META['REMOTE_ADDR']
 
 
+def get_ip(request):
+    HEADER_FIELDS = [
+        'HTTP_X_FORWARDED_FOR',
+        'HTTP_X_REAL_FORWARDED_FOR',
+        'HTTP_CLIENT_IP',
+        'REMOTE_ADDR',
+        'X-Real-IP',
+    ]
+    for header in HEADER_FIELDS:
+        ip = request.META.get(header, '')
+        if ip:
+            break
+    return ip
+
+
 _SIMPLE_KEYS = {
-    'ip': lambda r: r.META['REMOTE_ADDR'],
+    'ip': get_ip,
     'user': lambda r: str(r.user.pk),
     'user_or_ip': user_or_ip,
 }
@@ -153,7 +168,6 @@ def get_usage_count(request, group=None, fn=None, key=None, rate=None,
     else:
         raise ImproperlyConfigured(
             'Could not understand ratelimit key: %s' % key)
-
     cache_key, raw_key = _make_cache_key(group, rate, value, method)
     time_left = _get_window(value, period) - int(time.time())
     initial_value = 1 if increment else 0
