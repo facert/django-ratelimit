@@ -14,6 +14,16 @@ variable.
 :Issues:        https://github.com/jsocol/django-ratelimit/issues
 :Documentation: http://django-ratelimit.readthedocs.io/
 
+执行命令
+
+::
+
+      pip install -r requirements.txt
+      
+
+::
+      
+      
 在 django-ratelimit 的基础上增加了超过频率邮件报警的功能, settings 文件如下
 
 
